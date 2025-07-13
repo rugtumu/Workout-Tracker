@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:fitness_tracker/providers/workout_provider.dart';
-import 'package:fitness_tracker/providers/medical_provider.dart';
-import 'package:fitness_tracker/screens/home_screen.dart';
-import 'package:fitness_tracker/utils/database_helper.dart';
+import 'package:workout_tracker/providers/workout_provider.dart';
+import 'package:workout_tracker/providers/medical_provider.dart';
+import 'package:workout_tracker/screens/home_screen.dart';
+import 'package:workout_tracker/screens/welcome_screen.dart';
+import 'package:workout_tracker/utils/database_helper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,7 +27,7 @@ class FitnessTrackerApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => MedicalProvider()),
       ],
       child: MaterialApp(
-        title: 'Fitness Tracker',
+        title: 'Workout Tracker',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           brightness: Brightness.dark,
@@ -65,7 +67,7 @@ class FitnessTrackerApp extends StatelessWidget {
             hintStyle: const TextStyle(color: Colors.white54),
           ),
         ),
-        home: const HomeScreen(),
+        home: const WelcomeScreen(),
       ),
     );
   }

@@ -16,7 +16,7 @@ class ExportHelper {
       await Share.shareXFiles(
         [XFile(file.path)],
         subject: subject,
-        text: 'Fitness Tracker Data Export',
+        text: 'Workout Tracker Data Export',
       );
     } catch (e) {
       throw Exception('Failed to export data: $e');

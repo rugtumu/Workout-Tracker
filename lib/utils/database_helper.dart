@@ -1,7 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:fitness_tracker/models/workout.dart';
-import 'package:fitness_tracker/models/medical_data.dart';
+import 'package:workout_tracker/models/workout.dart';
+import 'package:workout_tracker/models/medical_data.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();

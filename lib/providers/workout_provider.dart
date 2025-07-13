@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:fitness_tracker/models/workout.dart';
-import 'package:fitness_tracker/utils/database_helper.dart';
+import 'package:workout_tracker/models/workout.dart';
+import 'package:workout_tracker/utils/database_helper.dart';
 
 class WorkoutProvider with ChangeNotifier {
   List<Workout> _workouts = [];

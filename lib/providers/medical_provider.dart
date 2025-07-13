@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:fitness_tracker/models/medical_data.dart';
-import 'package:fitness_tracker/utils/database_helper.dart';
+import 'package:workout_tracker/models/medical_data.dart';
+import 'package:workout_tracker/utils/database_helper.dart';
 
 class MedicalProvider with ChangeNotifier {
   List<MedicalData> _medicalData = [];

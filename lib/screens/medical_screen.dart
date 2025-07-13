@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:fitness_tracker/providers/medical_provider.dart';
-import 'package:fitness_tracker/widgets/medical_data_card.dart';
-import 'package:fitness_tracker/widgets/add_medical_data_dialog.dart';
-import 'package:fitness_tracker/widgets/medical_chart.dart';
+import 'package:workout_tracker/providers/medical_provider.dart';
+import 'package:workout_tracker/widgets/medical_data_card.dart';
+import 'package:workout_tracker/widgets/add_medical_data_dialog.dart';
+import 'package:workout_tracker/widgets/medical_chart.dart';
 import 'package:intl/intl.dart';
 
 class MedicalScreen extends StatefulWidget {

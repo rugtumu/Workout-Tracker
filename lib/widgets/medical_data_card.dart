@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fitness_tracker/models/medical_data.dart';
+import 'package:workout_tracker/models/medical_data.dart';
 import 'package:intl/intl.dart';
 
 class MedicalDataCard extends StatelessWidget {

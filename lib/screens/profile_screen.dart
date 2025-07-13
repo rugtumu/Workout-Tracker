@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:fitness_tracker/providers/workout_provider.dart';
-import 'package:fitness_tracker/providers/medical_provider.dart';
-import 'package:fitness_tracker/utils/database_helper.dart';
-import 'package:fitness_tracker/utils/export_helper.dart';
+import 'package:workout_tracker/providers/workout_provider.dart';
+import 'package:workout_tracker/providers/medical_provider.dart';
+import 'package:workout_tracker/utils/database_helper.dart';
+import 'package:workout_tracker/utils/export_helper.dart';
+import 'package:workout_tracker/utils/import_helper.dart';
 import 'package:share_plus/share_plus.dart';
 import 'dart:convert';
 
@@ -46,7 +47,7 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             const Text(
-              'Fitness Tracker',
+              'Workout Tracker',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -107,6 +108,14 @@ class ProfileScreen extends StatelessWidget {
                       Icons.download,
                       Colors.orange,
                       () => _exportAllData(context),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildDataCard(
+                      'Import Data',
+                      'Restore from backup',
+                      Icons.upload,
+                      Colors.purple,
+                      () => _importData(context),
                     ),
                   ],
                 );
@@ -250,11 +259,81 @@ class ProfileScreen extends StatelessWidget {
     }
   }
 
+  void _importData(BuildContext context) async {
+    try {
+      // Show confirmation dialog
+      final shouldImport = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Import Data'),
+          content: const Text(
+            'This will import data from a backup file. Existing data will be preserved. Continue?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Import'),
+            ),
+          ],
+        ),
+      );
+
+      if (shouldImport != true) return;
+
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const AlertDialog(
+          content: Row(
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(width: 16),
+              Text('Importing data...'),
+            ],
+          ),
+        ),
+      );
+
+      // Import data
+      final data = await ImportHelper.importData();
+      if (data != null) {
+        await ImportHelper.importAllData(data);
+        
+        // Refresh providers
+        await context.read<WorkoutProvider>().loadWorkouts();
+        await context.read<MedicalProvider>().loadMedicalData();
+
+        if (context.mounted) {
+          Navigator.of(context).pop(); // Close loading dialog
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Data imported successfully')),
+          );
+        }
+      } else {
+        if (context.mounted) {
+          Navigator.of(context).pop(); // Close loading dialog
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        Navigator.of(context).pop(); // Close loading dialog
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to import data: $e')),
+        );
+      }
+    }
+  }
+
   void _showAboutDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('About Fitness Tracker'),
+        title: const Text('About Workout Tracker'),
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -267,7 +346,7 @@ class ProfileScreen extends StatelessWidget {
             Text('• Workout logging and tracking'),
             Text('• Medical data monitoring'),
             Text('• Progress visualization'),
-            Text('• Data export capabilities'),
+            Text('• Data export/import capabilities'),
             SizedBox(height: 16),
             Text('Built with Flutter and SQLite'),
           ],
@@ -314,9 +393,22 @@ class ProfileScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Clear All Data'),
-        content: const Text(
-          'This will permanently delete all workout and medical data. This action cannot be undone.',
+        title: const Text('⚠️ Clear All Data'),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('⚠️ WARNING: This action is irreversible!', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red)),
+            SizedBox(height: 8),
+            Text('This will permanently delete:'),
+            Text('• All workout data'),
+            Text('• All medical data'),
+            Text('• All progress history'),
+            SizedBox(height: 8),
+            Text('💡 Recommendation: Export your data first using the "Export All Data" option above.'),
+            SizedBox(height: 8),
+            Text('This action cannot be undone. Are you absolutely sure?'),
+          ],
         ),
         actions: [
           TextButton(
@@ -326,9 +418,91 @@ class ProfileScreen extends StatelessWidget {
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
-              _clearAllData(context);
+              _showSecondWarning(context);
             },
-            child: const Text('Clear All', style: TextStyle(color: Colors.red)),
+            child: const Text('I Understand', style: TextStyle(color: Colors.orange)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showSecondWarning(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('🚨 Final Warning'),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('This is your LAST chance to cancel.', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red)),
+            SizedBox(height: 8),
+            Text('All your data will be permanently deleted.'),
+            SizedBox(height: 8),
+            Text('To confirm deletion, type exactly:'),
+            SizedBox(height: 4),
+            Text('"Terminate all!"', style: TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _showFinalConfirmation(context);
+            },
+            child: const Text('Continue', style: TextStyle(color: Colors.orange)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showFinalConfirmation(BuildContext context) {
+    final TextEditingController controller = TextEditingController();
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('🔒 Final Confirmation'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Type the exact phrase to confirm:'),
+            const SizedBox(height: 8),
+            TextField(
+              controller: controller,
+              decoration: const InputDecoration(
+                hintText: 'Terminate all!',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text('This action cannot be undone.', style: TextStyle(color: Colors.red)),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              if (controller.text.trim() == "Terminate all!") {
+                Navigator.of(context).pop();
+                _clearAllData(context);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Incorrect phrase. Please type exactly: Terminate all!')),
+                );
+              }
+            },
+            child: const Text('Delete All', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:fitness_tracker/providers/workout_provider.dart';
-import 'package:fitness_tracker/models/workout.dart';
+import 'package:workout_tracker/providers/workout_provider.dart';
+import 'package:workout_tracker/models/workout.dart';
+import 'package:workout_tracker/models/exercise_types.dart';
 import 'package:intl/intl.dart';
 
 class AddWorkoutDialog extends StatefulWidget {
@@ -58,17 +59,31 @@ class _AddWorkoutDialogState extends State<AddWorkoutDialog> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextFormField(
-                controller: _exerciseController,
-                decoration: const InputDecoration(
-                  labelText: 'Exercise Name',
-                  hintText: 'e.g., Bench Press',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter an exercise name';
+              Autocomplete<String>(
+                optionsBuilder: (TextEditingValue textEditingValue) {
+                  if (textEditingValue.text.isEmpty) {
+                    return ExerciseTypes.predefinedExercises;
                   }
-                  return null;
+                  return ExerciseTypes.getFilteredExercises(textEditingValue.text);
+                },
+                fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+                  return TextFormField(
+                    controller: controller,
+                    focusNode: focusNode,
+                    decoration: const InputDecoration(
+                      labelText: 'Exercise Name',
+                      hintText: 'Select or type exercise name',
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter an exercise name';
+                      }
+                      return null;
+                    },
+                  );
+                },
+                onSelected: (String selection) {
+                  _exerciseController.text = selection;
                 },
               ),
               const SizedBox(height: 16),

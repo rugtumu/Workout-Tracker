@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:fitness_tracker/models/workout.dart';
+import 'package:workout_tracker/models/workout.dart';
 import 'package:intl/intl.dart';
 
 class ProgressChart extends StatelessWidget {

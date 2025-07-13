@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:fitness_tracker/providers/workout_provider.dart';
-import 'package:fitness_tracker/widgets/workout_card.dart';
-import 'package:fitness_tracker/widgets/add_workout_dialog.dart';
-import 'package:fitness_tracker/widgets/progress_chart.dart';
+import 'package:workout_tracker/providers/workout_provider.dart';
+import 'package:workout_tracker/widgets/workout_card.dart';
+import 'package:workout_tracker/widgets/add_workout_dialog.dart';
+import 'package:workout_tracker/widgets/progress_chart.dart';
 import 'package:intl/intl.dart';
 
 class WorkoutScreen extends StatefulWidget {

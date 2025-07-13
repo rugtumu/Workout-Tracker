@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:fitness_tracker/providers/medical_provider.dart';
-import 'package:fitness_tracker/models/medical_data.dart';
+import 'package:workout_tracker/providers/medical_provider.dart';
+import 'package:workout_tracker/models/medical_data.dart';
+import 'package:workout_tracker/models/measurement_types.dart';
 import 'package:intl/intl.dart';
 
 class AddMedicalDataDialog extends StatefulWidget {
@@ -23,18 +24,6 @@ class _AddMedicalDataDialogState extends State<AddMedicalDataDialog> {
   final _unitController = TextEditingController();
   final _notesController = TextEditingController();
   String _selectedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
-
-  final List<String> _commonTypes = [
-    'Weight',
-    'Height',
-    'Body Fat',
-    'Blood Pressure',
-    'Heart Rate',
-    'Vitamin D',
-    'Cholesterol',
-    'Blood Sugar',
-    'BMI',
-  ];
 
   @override
   void initState() {
@@ -70,9 +59,9 @@ class _AddMedicalDataDialogState extends State<AddMedicalDataDialog> {
               Autocomplete<String>(
                 optionsBuilder: (TextEditingValue textEditingValue) {
                   if (textEditingValue.text.isEmpty) {
-                    return _commonTypes;
+                    return MeasurementTypes.predefinedTypes;
                   }
-                  return _commonTypes.where((type) =>
+                  return MeasurementTypes.predefinedTypes.where((type) =>
                       type.toLowerCase().contains(textEditingValue.text.toLowerCase()));
                 },
                 fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
@@ -80,12 +69,12 @@ class _AddMedicalDataDialogState extends State<AddMedicalDataDialog> {
                     controller: controller,
                     focusNode: focusNode,
                     decoration: const InputDecoration(
-                      labelText: 'Data Type',
-                      hintText: 'e.g., Weight, Blood Pressure',
+                      labelText: 'Measurement Type',
+                      hintText: 'Select or type measurement type',
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter a data type';
+                        return 'Please enter a measurement type';
                       }
                       return null;
                     },
@@ -179,34 +168,9 @@ class _AddMedicalDataDialogState extends State<AddMedicalDataDialog> {
   }
 
   void _setDefaultUnit(String type) {
-    switch (type.toLowerCase()) {
-      case 'weight':
-        _unitController.text = 'kg';
-        break;
-      case 'height':
-        _unitController.text = 'cm';
-        break;
-      case 'body fat':
-        _unitController.text = '%';
-        break;
-      case 'blood pressure':
-        _unitController.text = 'mmHg';
-        break;
-      case 'heart rate':
-        _unitController.text = 'bpm';
-        break;
-      case 'vitamin d':
-        _unitController.text = 'ng/ml';
-        break;
-      case 'cholesterol':
-        _unitController.text = 'mg/dl';
-        break;
-      case 'blood sugar':
-        _unitController.text = 'mg/dl';
-        break;
-      case 'bmi':
-        _unitController.text = '';
-        break;
+    final defaultUnit = MeasurementTypes.getDefaultUnit(type);
+    if (defaultUnit.isNotEmpty) {
+      _unitController.text = defaultUnit;
     }
   }
 
