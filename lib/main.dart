@@ -85,6 +85,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(32),
@@ -93,17 +94,18 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('Set a PIN for your data', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                const Text('Set a PIN for your data', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
                 const SizedBox(height: 16),
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.orange.withOpacity(0.1),
+                    color: Colors.red.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.red.withOpacity(0.3)),
                   ),
                   child: const Text(
                     '⚠️ IMPORTANT: If you forget your PIN, your data cannot be recovered!\nPlease write down your PIN in a safe place. There is NO way to reset or recover your PIN.',
-                    style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -160,6 +162,7 @@ class _PinEntryScreenState extends State<PinEntryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(32),
@@ -168,17 +171,18 @@ class _PinEntryScreenState extends State<PinEntryScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('Enter your PIN', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                const Text('Enter your PIN', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
                 const SizedBox(height: 16),
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.orange.withOpacity(0.1),
+                    color: Colors.red.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.red.withOpacity(0.3)),
                   ),
                   child: const Text(
                     '⚠️ If you forget your PIN, your data cannot be recovered!\nThere is NO way to reset or recover your PIN.',
-                    style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
                 ),
