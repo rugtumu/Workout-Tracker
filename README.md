@@ -196,14 +196,15 @@ adb install build/app/outputs/flutter-apk/app-debug.apk
 4. Veriler JSON dosyaları olarak dışa aktarılacak
 5. Yedek dosyalardan geri yüklemek için **Veri İçe Aktar** kullanın
 
-## Veri Gizliliği
+## Veri Gizliliği ve Güvenlik
 
-- Tüm veriler cihazınızda yerel olarak saklanır
-- Hiçbir veri dış sunuculara gönderilmez
-- Veriler yerel SQLite veritabanında şifrelenir
-- Verileriniz üzerinde tam kontrolünüz var
-- Veri yedekleme için dışa aktarma özelliklerini kullanın
-- İçe aktarma sadece bu uygulamadan dışa aktarılan dosyaları kabul eder
+- Tüm veriler cihazınızda **şifreli (encrypted)** olarak saklanır (SQLCipher ile).
+- Veritabanı şifresi, uygulama ilk açılışta belirlediğiniz **PIN** ile korunur. **PIN unutulursa kurtarılamaz!** PIN'inizi güvenli bir yerde saklayın.
+- Hiçbir veri harici sunuculara gönderilmez.
+- Veritabanı dosyası şifreli olduğu için, cihazınız kaybolsa veya hacklense bile verileriniz koruma altındadır.
+- Cihazınızın kaybolma veya hacklenme durumuna karşı verilerinizi düzenli olarak yedeklemeniz tavsiye edilir.
+- Eski (şifresiz) veritabanı ile uyumsuzluk durumunda, uygulama yeni şifreli veritabanı oluşturur. Eski veriler korunmaz.
+- Workout ve medikal veri ekleme/güncelleme işlemlerinde, veriler anında ekranda görünür (gelişmiş state yönetimi).
 
 ## Teknik Detaylar
 
@@ -301,6 +302,13 @@ Sorunlar veya sorular için:
 ## Sorumluluk Reddi
 
 Bu uygulama kişisel kullanım için tasarlanmıştır. Tıbbi tavsiye için her zaman sağlık uzmanlarına danışın. Uygulama profesyonel tıbbi rehberliğin yerini tutmaz.
+
+## Yenilikler (v1.0.2)
+
+- Veritabanı artık **SQLCipher** ile şifreli ve PIN ile korunuyor. PIN unutulursa kurtarılamaz, uyarı ekranı eklendi.
+- Eski şifresiz veritabanı ile uyumsuzluk durumunda yeni şifreli veritabanı otomatik oluşturuluyor.
+- Workout ve medical data ekleme/güncelleme işlemlerinde anında güncellenen UI (await ile).
+- Gelişmiş güvenlik ve veri gizliliği vurgusu.
 
 </details>
 
@@ -500,12 +508,13 @@ adb install build/app/outputs/flutter-apk/app-debug.apk
 
 ## Data Privacy
 
-- All data is stored locally on your device
-- No data is sent to external servers
-- Data is encrypted in the local SQLite database
-- You have complete control over your data
-- Use export features for data backup
-- Import only accepts files exported from this app
+- All data is stored **encrypted** on your device (using SQLCipher).
+- The database password is protected by a **PIN** you set on first launch. **If you forget your PIN, it cannot be recovered!** Store your PIN safely.
+- No data is sent to external servers.
+- The database file is encrypted, so even if your device is lost or hacked, your data is protected.
+- It is recommended to back up your data regularly in case your device is lost or compromised.
+- If an old (unencrypted) database is detected, the app will create a new encrypted database. Old data will not be preserved.
+- Workout and medical data additions/updates now instantly update the UI (improved state management).
 
 ## Technical Details
 
@@ -603,5 +612,12 @@ For issues or questions:
 ## Disclaimer
 
 This app is designed for personal use. Always consult healthcare professionals for medical advice. The app is not a substitute for professional medical guidance.
+
+## What's New (v1.0.2)
+
+- Database is now **encrypted with SQLCipher** and protected by a PIN. If you forget your PIN, it cannot be recovered; warning screen added.
+- If an old unencrypted database is detected, a new encrypted database is automatically created.
+- Workout and medical data additions/updates now instantly update the UI (using await).
+- Enhanced security and data privacy emphasis.
 
 </details> 
