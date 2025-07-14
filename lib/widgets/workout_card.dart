@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:workout_tracker/models/workout.dart';
+import 'package:workout_tracker/models/exercise_types.dart';
 import 'package:intl/intl.dart';
 
 class WorkoutCard extends StatelessWidget {
@@ -16,6 +17,8 @@ class WorkoutCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isCardio = ExerciseTypes.isCardio(workout.exerciseName);
+    
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
@@ -70,15 +73,25 @@ class WorkoutCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            Row(
-              children: [
-                _buildInfoChip('${workout.sets} sets', Colors.green),
-                const SizedBox(width: 8),
-                _buildInfoChip('${workout.reps} reps', Colors.blue),
-                const SizedBox(width: 8),
-                _buildInfoChip('${workout.weight} kg', Colors.orange),
-              ],
-            ),
+            if (isCardio && workout.durationMinutes != null) ...[
+              Row(
+                children: [
+                  _buildInfoChip('${workout.durationMinutes} minutes', Colors.purple),
+                  const SizedBox(width: 8),
+                  _buildInfoChip('Cardio', Colors.red),
+                ],
+              ),
+            ] else ...[
+              Row(
+                children: [
+                  _buildInfoChip('${workout.sets} sets', Colors.green),
+                  const SizedBox(width: 8),
+                  _buildInfoChip('${workout.reps} reps', Colors.blue),
+                  const SizedBox(width: 8),
+                  _buildInfoChip('${workout.weight} kg', Colors.orange),
+                ],
+              ),
+            ],
             if (workout.notes != null && workout.notes!.isNotEmpty) ...[
               const SizedBox(height: 8),
               Text(

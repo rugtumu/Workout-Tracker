@@ -17,7 +17,8 @@ class MedicalProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      _medicalData = await DatabaseHelper.instance.getMedicalData();
+      final dbHelper = await DatabaseHelper.getInstance();
+      _medicalData = await dbHelper.getMedicalData();
     } catch (e) {
       _error = 'Failed to load medical data: $e';
     } finally {
@@ -28,7 +29,8 @@ class MedicalProvider with ChangeNotifier {
 
   Future<void> addMedicalData(MedicalData data) async {
     try {
-      await DatabaseHelper.instance.insertMedicalData(data);
+      final dbHelper = await DatabaseHelper.getInstance();
+      await dbHelper.insertMedicalData(data);
       await loadMedicalData();
     } catch (e) {
       _error = 'Failed to add medical data: $e';
@@ -38,7 +40,8 @@ class MedicalProvider with ChangeNotifier {
 
   Future<void> updateMedicalData(MedicalData data) async {
     try {
-      await DatabaseHelper.instance.updateMedicalData(data);
+      final dbHelper = await DatabaseHelper.getInstance();
+      await dbHelper.updateMedicalData(data);
       await loadMedicalData();
     } catch (e) {
       _error = 'Failed to update medical data: $e';
@@ -48,7 +51,8 @@ class MedicalProvider with ChangeNotifier {
 
   Future<void> deleteMedicalData(int id) async {
     try {
-      await DatabaseHelper.instance.deleteMedicalData(id);
+      final dbHelper = await DatabaseHelper.getInstance();
+      await dbHelper.deleteMedicalData(id);
       await loadMedicalData();
     } catch (e) {
       _error = 'Failed to delete medical data: $e';
@@ -58,7 +62,8 @@ class MedicalProvider with ChangeNotifier {
 
   Future<List<MedicalData>> getMedicalDataByType(String type) async {
     try {
-      return await DatabaseHelper.instance.getMedicalDataByType(type);
+      final dbHelper = await DatabaseHelper.getInstance();
+      return await dbHelper.getMedicalDataByType(type);
     } catch (e) {
       _error = 'Failed to get medical data by type: $e';
       notifyListeners();

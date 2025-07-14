@@ -170,30 +170,24 @@ class _MedicalScreenState extends State<MedicalScreen> with TickerProviderStateM
                       ),
                     ),
                     const SizedBox(height: 16),
-                    DropdownButtonFormField<String>(
-                      value: _selectedType.isEmpty ? types.first : _selectedType,
-                      decoration: const InputDecoration(
-                        labelText: 'Select Data Type',
-                        border: OutlineInputBorder(),
-                      ),
-                      items: types.map((type) {
-                        return DropdownMenuItem(
-                          value: type,
-                          child: Text(type),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedType = value!;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    if (_selectedType.isNotEmpty)
-                      MedicalChart(
-                        dataType: _selectedType,
-                        medicalData: medicalProvider.getMedicalDataByTypeMap()[_selectedType] ?? [],
-                      ),
+                    ...types.map((type) => Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          type,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        MedicalChart(
+                          dataType: type,
+                          medicalData: medicalProvider.getMedicalDataByTypeMap()[type] ?? [],
+                        ),
+                        const SizedBox(height: 24),
+                      ],
+                    )),
                   ],
                 ),
               ),

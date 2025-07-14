@@ -5,8 +5,8 @@ import 'package:workout_tracker/providers/medical_provider.dart';
 import 'package:workout_tracker/utils/database_helper.dart';
 import 'package:workout_tracker/utils/export_helper.dart';
 import 'package:workout_tracker/utils/import_helper.dart';
-import 'package:share_plus/share_plus.dart';
 import 'dart:convert';
+import 'package:workout_tracker/screens/welcome_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -87,7 +87,7 @@ class ProfileScreen extends StatelessWidget {
                 return Column(
                   children: [
                     _buildDataCard(
-                      'Workouts',
+                      'Export Workouts Data',
                       '${workoutProvider.workouts.length} entries',
                       Icons.fitness_center,
                       Colors.green,
@@ -95,7 +95,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     _buildDataCard(
-                      'Medical Data',
+                      'Export Medical Data',
                       '${medicalProvider.medicalData.length} entries',
                       Icons.health_and_safety,
                       Colors.blue,
@@ -236,7 +236,8 @@ class ProfileScreen extends StatelessWidget {
 
   void _exportAllData(BuildContext context) async {
     try {
-      final allData = await DatabaseHelper.instance.exportAllData();
+      final dbHelper = await DatabaseHelper.getInstance();
+      final allData = await dbHelper.exportAllData();
       final jsonData = jsonEncode(allData);
       
       await ExportHelper.exportData(
@@ -338,15 +339,15 @@ class ProfileScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Version: 1.0.0'),
+            Text('Version: 1.0.2'),
             SizedBox(height: 8),
             Text('A private, offline-capable workout tracker for personal use.'),
             SizedBox(height: 16),
             Text('Features:'),
-            Text('• Workout logging and tracking'),
-            Text('• Medical data monitoring'),
-            Text('• Progress visualization'),
-            Text('• Data export/import capabilities'),
+            Text('• Workout logging and tracking.'),
+            Text('• Medical data monitoring.'),
+            Text('• Progress visualization.'),
+            Text('• Data export/import capabilities.'),
             SizedBox(height: 16),
             Text('Built with Flutter and SQLite'),
           ],
@@ -372,9 +373,9 @@ class ProfileScreen extends StatelessWidget {
           children: [
             Text('Your data is stored locally on your device.'),
             SizedBox(height: 8),
-            Text('• No data is sent to external servers'),
-            Text('• All data is encrypted in the local database'),
-            Text('• You control your data completely'),
+            Text('• No data is sent to external servers.'),
+            Text('• All data is encrypted in the local database.'),
+            Text('• You control your data completely.'),
             SizedBox(height: 8),
             Text('For data backup, use the export features in this app.'),
           ],
@@ -528,9 +529,8 @@ class ProfileScreen extends StatelessWidget {
       }
       
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('All data cleared successfully')),
-        );
+        Navigator.of(context).pop(); // Close any open dialogs
+        _showDataTerminatedScreen(context);
       }
     } catch (e) {
       if (context.mounted) {
@@ -539,5 +539,49 @@ class ProfileScreen extends StatelessWidget {
         );
       }
     }
+  }
+
+  void _showDataTerminatedScreen(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Text('✅ Data Terminated Successfully'),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.check_circle,
+              color: Colors.green,
+              size: 64,
+            ),
+            SizedBox(height: 16),
+            Text(
+              'Your data has been terminated successfully.',
+              style: TextStyle(fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 8),
+            Text(
+              'All workout and medical data has been permanently deleted.',
+              style: TextStyle(color: Colors.white54),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+                (route) => false,
+              );
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 } 

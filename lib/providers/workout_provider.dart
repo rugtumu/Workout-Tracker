@@ -17,7 +17,8 @@ class WorkoutProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      _workouts = await DatabaseHelper.instance.getWorkouts();
+      final dbHelper = await DatabaseHelper.getInstance();
+      _workouts = await dbHelper.getWorkouts();
     } catch (e) {
       _error = 'Failed to load workouts: $e';
     } finally {
@@ -28,7 +29,8 @@ class WorkoutProvider with ChangeNotifier {
 
   Future<void> addWorkout(Workout workout) async {
     try {
-      await DatabaseHelper.instance.insertWorkout(workout);
+      final dbHelper = await DatabaseHelper.getInstance();
+      await dbHelper.insertWorkout(workout);
       await loadWorkouts();
     } catch (e) {
       _error = 'Failed to add workout: $e';
@@ -38,7 +40,8 @@ class WorkoutProvider with ChangeNotifier {
 
   Future<void> updateWorkout(Workout workout) async {
     try {
-      await DatabaseHelper.instance.updateWorkout(workout);
+      final dbHelper = await DatabaseHelper.getInstance();
+      await dbHelper.updateWorkout(workout);
       await loadWorkouts();
     } catch (e) {
       _error = 'Failed to update workout: $e';
@@ -48,7 +51,8 @@ class WorkoutProvider with ChangeNotifier {
 
   Future<void> deleteWorkout(int id) async {
     try {
-      await DatabaseHelper.instance.deleteWorkout(id);
+      final dbHelper = await DatabaseHelper.getInstance();
+      await dbHelper.deleteWorkout(id);
       await loadWorkouts();
     } catch (e) {
       _error = 'Failed to delete workout: $e';
@@ -58,7 +62,8 @@ class WorkoutProvider with ChangeNotifier {
 
   Future<List<Workout>> getWorkoutsByDate(String date) async {
     try {
-      return await DatabaseHelper.instance.getWorkoutsByDate(date);
+      final dbHelper = await DatabaseHelper.getInstance();
+      return await dbHelper.getWorkoutsByDate(date);
     } catch (e) {
       _error = 'Failed to get workouts by date: $e';
       notifyListeners();
@@ -68,7 +73,8 @@ class WorkoutProvider with ChangeNotifier {
 
   Future<List<Workout>> getWorkoutsByExercise(String exerciseName) async {
     try {
-      return await DatabaseHelper.instance.getWorkoutsByExercise(exerciseName);
+      final dbHelper = await DatabaseHelper.getInstance();
+      return await dbHelper.getWorkoutsByExercise(exerciseName);
     } catch (e) {
       _error = 'Failed to get workouts by exercise: $e';
       notifyListeners();

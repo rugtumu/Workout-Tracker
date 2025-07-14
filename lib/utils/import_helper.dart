@@ -70,16 +70,18 @@ class ImportHelper {
   }
 
   static Future<void> importWorkouts(List<dynamic> workoutsData) async {
+    final dbHelper = await DatabaseHelper.getInstance();
     for (final workoutData in workoutsData) {
       final workout = Workout.fromMap(workoutData);
-      await DatabaseHelper.instance.insertWorkout(workout);
+      await dbHelper.insertWorkout(workout);
     }
   }
 
   static Future<void> importMedicalData(List<dynamic> medicalDataList) async {
+    final dbHelper = await DatabaseHelper.getInstance();
     for (final medicalData in medicalDataList) {
       final data = MedicalData.fromMap(medicalData);
-      await DatabaseHelper.instance.insertMedicalData(data);
+      await dbHelper.insertMedicalData(data);
     }
   }
 
