@@ -1,24 +1,24 @@
 class MeasurementTypes {
   static const List<String> predefinedTypes = [
-    "Body weight",
+    "Body Weight",
     "Waist",
-    "Body fat",
-    "Left biceps",
-    "Right biceps",
-    "Left forearm",
-    "Right forearm",
-    "Caloric intake",
+    "Body Fat",
+    "Left Biceps",
+    "Right Biceps",
+    "Left Forearm",
+    "Right Forearm",
+    "Caloric Intake",
   ];
 
   static const Map<String, String> defaultUnits = {
-    "Body weight": "kg",
+    "Body Weight": "kg",
     "Waist": "cm",
-    "Body fat": "%",
-    "Left biceps": "cm",
-    "Right biceps": "cm",
-    "Left forearm": "cm",
-    "Right forearm": "cm",
-    "Caloric intake": "kcal",
+    "Body Fat": "%",
+    "Left Biceps": "cm",
+    "Right Biceps": "cm",
+    "Left Forearm": "cm",
+    "Right Forearm": "cm",
+    "Caloric Intake": "kcal",
   };
 
   static String getDefaultUnit(String type) {

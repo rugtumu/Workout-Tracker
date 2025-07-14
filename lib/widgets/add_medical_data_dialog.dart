@@ -68,9 +68,15 @@ class _AddMedicalDataDialogState extends State<AddMedicalDataDialog> {
                   return TextFormField(
                     controller: controller,
                     focusNode: focusNode,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Measurement Type',
                       hintText: 'Select or type measurement type',
+                      filled: true,
+                      fillColor: const Color(0xFF294034),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -92,9 +98,15 @@ class _AddMedicalDataDialogState extends State<AddMedicalDataDialog> {
                     flex: 2,
                     child: TextFormField(
                       controller: _valueController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'Value',
                         hintText: '70.5',
+                        filled: true,
+                        fillColor: const Color(0xFF294034),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
                       ),
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       validator: (value) {
@@ -113,9 +125,15 @@ class _AddMedicalDataDialogState extends State<AddMedicalDataDialog> {
                   Expanded(
                     child: TextFormField(
                       controller: _unitController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'Unit',
                         hintText: 'kg',
+                        filled: true,
+                        fillColor: const Color(0xFF294034),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
                       ),
                     ),
                   ),
@@ -144,9 +162,15 @@ class _AddMedicalDataDialogState extends State<AddMedicalDataDialog> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _notesController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Notes (optional)',
                   hintText: 'Any additional information',
+                  filled: true,
+                  fillColor: const Color(0xFF294034),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
                 maxLines: 3,
               ),
@@ -202,7 +226,7 @@ class _AddMedicalDataDialogState extends State<AddMedicalDataDialog> {
     }
   }
 
-  void _saveMedicalData() {
+  void _saveMedicalData() async {
     if (_formKey.currentState!.validate()) {
       final medicalData = MedicalData(
         id: widget.medicalData?.id,
@@ -216,9 +240,9 @@ class _AddMedicalDataDialogState extends State<AddMedicalDataDialog> {
       final medicalProvider = context.read<MedicalProvider>();
       
       if (widget.medicalData == null) {
-        medicalProvider.addMedicalData(medicalData);
+        await medicalProvider.addMedicalData(medicalData);
       } else {
-        medicalProvider.updateMedicalData(medicalData);
+        await medicalProvider.updateMedicalData(medicalData);
       }
 
       Navigator.of(context).pop();

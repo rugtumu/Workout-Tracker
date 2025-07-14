@@ -5,6 +5,7 @@ class Workout {
   final int sets;
   final int reps;
   final double weight;
+  final int? durationMinutes; // For cardio exercises
   final String? notes;
 
   Workout({
@@ -14,6 +15,7 @@ class Workout {
     required this.sets,
     required this.reps,
     required this.weight,
+    this.durationMinutes,
     this.notes,
   });
 
@@ -25,6 +27,7 @@ class Workout {
       'sets': sets,
       'reps': reps,
       'weight': weight,
+      'duration_minutes': durationMinutes,
       'notes': notes,
     };
   }
@@ -37,6 +40,7 @@ class Workout {
       sets: map['sets'],
       reps: map['reps'],
       weight: map['weight'],
+      durationMinutes: map['duration_minutes'],
       notes: map['notes'],
     );
   }
@@ -48,6 +52,7 @@ class Workout {
     int? sets,
     int? reps,
     double? weight,
+    int? durationMinutes,
     String? notes,
   }) {
     return Workout(
@@ -57,12 +62,13 @@ class Workout {
       sets: sets ?? this.sets,
       reps: reps ?? this.reps,
       weight: weight ?? this.weight,
+      durationMinutes: durationMinutes ?? this.durationMinutes,
       notes: notes ?? this.notes,
     );
   }
 
   @override
   String toString() {
-    return 'Workout(id: $id, date: $date, exerciseName: $exerciseName, sets: $sets, reps: $reps, weight: $weight, notes: $notes)';
+    return 'Workout(id: $id, date: $date, exerciseName: $exerciseName, sets: $sets, reps: $reps, weight: $weight, durationMinutes: $durationMinutes, notes: $notes)';
   }
 } 

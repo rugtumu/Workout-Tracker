@@ -33,127 +33,127 @@ class MedicalChart extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              dataType,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
+            Container(
               height: 200,
-              child: LineChart(
-                LineChartData(
-                  gridData: FlGridData(
-                    show: true,
-                    drawVerticalLine: true,
-                    horizontalInterval: _getInterval(recentData),
-                    verticalInterval: 1,
-                    getDrawingHorizontalLine: (value) {
-                      return FlLine(
-                        color: Colors.white24,
-                        strokeWidth: 1,
-                      );
-                    },
-                    getDrawingVerticalLine: (value) {
-                      return FlLine(
-                        color: Colors.white24,
-                        strokeWidth: 1,
-                      );
-                    },
-                  ),
-                  titlesData: FlTitlesData(
-                    show: true,
-                    rightTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
+              decoration: BoxDecoration(
+                color: Color(0xFF232D28), // Chart background dark
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: LineChart(
+                  LineChartData(
+                    backgroundColor: Color(0xFF232D28),
+                    gridData: FlGridData(
+                      show: true,
+                      drawVerticalLine: true,
+                      horizontalInterval: _getInterval(recentData),
+                      verticalInterval: 1,
+                      getDrawingHorizontalLine: (value) {
+                        return FlLine(
+                          color: Colors.white24,
+                          strokeWidth: 1,
+                        );
+                      },
+                      getDrawingVerticalLine: (value) {
+                        return FlLine(
+                          color: Colors.white24,
+                          strokeWidth: 1,
+                        );
+                      },
                     ),
-                    topTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        reservedSize: 30,
-                        interval: 1,
-                        getTitlesWidget: (double value, TitleMeta meta) {
-                          if (value.toInt() >= recentData.length) {
-                            return const Text('');
-                          }
-                          final data = recentData[value.toInt()];
-                          final date = DateTime.parse(data.date);
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 8),
-                            child: Text(
-                              DateFormat('MM/dd').format(date),
+                    titlesData: FlTitlesData(
+                      show: true,
+                      rightTitles: AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
+                      topTitles: AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          reservedSize: 30,
+                          interval: 1,
+                          getTitlesWidget: (double value, TitleMeta meta) {
+                            if (value.toInt() >= recentData.length) {
+                              return const Text('');
+                            }
+                            final data = recentData[value.toInt()];
+                            final date = DateTime.parse(data.date);
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 8),
+                              child: Text(
+                                DateFormat('MM/dd').format(date),
+                                style: const TextStyle(
+                                  color: Colors.white54,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      leftTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          interval: _getInterval(recentData),
+                          reservedSize: 40,
+                          getTitlesWidget: (double value, TitleMeta meta) {
+                            return Text(
+                              value.toStringAsFixed(1),
                               style: const TextStyle(
                                 color: Colors.white54,
                                 fontSize: 10,
                               ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        interval: _getInterval(recentData),
-                        reservedSize: 40,
-                        getTitlesWidget: (double value, TitleMeta meta) {
-                          return Text(
-                            value.toStringAsFixed(1),
-                            style: const TextStyle(
-                              color: Colors.white54,
-                              fontSize: 10,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                  borderData: FlBorderData(
-                    show: true,
-                    border: Border.all(color: Colors.white24),
-                  ),
-                  minX: 0,
-                  maxX: (recentData.length - 1).toDouble(),
-                  minY: _getMinValue(recentData) - _getRange(recentData) * 0.1,
-                  maxY: _getMaxValue(recentData) + _getRange(recentData) * 0.1,
-                  lineBarsData: [
-                    LineChartBarData(
-                      spots: _createSpots(recentData),
-                      isCurved: true,
-                      gradient: LinearGradient(
-                        colors: [
-                          _getColorForType(dataType).withOpacity(0.8),
-                          _getColorForType(dataType).withOpacity(0.3),
-                        ],
-                      ),
-                      barWidth: 3,
-                      isStrokeCapRound: true,
-                      dotData: FlDotData(
-                        show: true,
-                        getDotPainter: (spot, percent, barData, index) {
-                          return FlDotCirclePainter(
-                            radius: 4,
-                            color: _getColorForType(dataType),
-                            strokeWidth: 2,
-                            strokeColor: Colors.white,
-                          );
-                        },
-                      ),
-                      belowBarData: BarAreaData(
-                        show: true,
-                        gradient: LinearGradient(
-                          colors: [
-                            _getColorForType(dataType).withOpacity(0.3),
-                            _getColorForType(dataType).withOpacity(0.1),
-                          ],
+                            );
+                          },
                         ),
                       ),
                     ),
-                  ],
+                    borderData: FlBorderData(
+                      show: true,
+                      border: Border.all(color: Colors.white24),
+                    ),
+                    minX: 0,
+                    maxX: (recentData.length - 1).toDouble(),
+                    minY: _getMinValue(recentData) - _getRange(recentData) * 0.1,
+                    maxY: _getMaxValue(recentData) + _getRange(recentData) * 0.1,
+                    lineBarsData: [
+                      LineChartBarData(
+                        spots: _createSpots(recentData),
+                        isCurved: true,
+                        gradient: LinearGradient(
+                          colors: [
+                            _getColorForType(dataType).withOpacity(0.8),
+                            _getColorForType(dataType).withOpacity(0.3),
+                          ],
+                        ),
+                        barWidth: 3,
+                        isStrokeCapRound: true,
+                        dotData: FlDotData(
+                          show: true,
+                          getDotPainter: (spot, percent, barData, index) {
+                            return FlDotCirclePainter(
+                              radius: 4,
+                              color: _getColorForType(dataType),
+                              strokeWidth: 2,
+                              strokeColor: Colors.white,
+                            );
+                          },
+                        ),
+                        belowBarData: BarAreaData(
+                          show: true,
+                          gradient: LinearGradient(
+                            colors: [
+                              _getColorForType(dataType).withOpacity(0.3),
+                              _getColorForType(dataType).withOpacity(0.1),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
