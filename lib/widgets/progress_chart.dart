@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:workout_tracker/models/workout.dart';
+import 'package:workout_tracker/models/exercise_types.dart';
 import 'package:intl/intl.dart';
 
 class ProgressChart extends StatelessWidget {
@@ -25,6 +26,8 @@ class ProgressChart extends StatelessWidget {
 
     // Get the last 10 workouts for the chart
     final recentWorkouts = sortedWorkouts.take(10).toList();
+
+    final isCardio = ExerciseTypes.isCardio(exerciseName);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
@@ -56,7 +59,7 @@ class ProgressChart extends StatelessWidget {
                     gridData: FlGridData(
                       show: true,
                       drawVerticalLine: true,
-                      horizontalInterval: 10,
+                      horizontalInterval: isCardio ? 5 : 10,
                       verticalInterval: 1,
                       getDrawingHorizontalLine: (value) {
                         return FlLine(
@@ -106,7 +109,7 @@ class ProgressChart extends StatelessWidget {
                       leftTitles: AxisTitles(
                         sideTitles: SideTitles(
                           showTitles: true,
-                          interval: 10,
+                          interval: isCardio ? 5 : 10,
                           reservedSize: 40,
                           getTitlesWidget: (double value, TitleMeta meta) {
                             return Text(
@@ -127,15 +130,15 @@ class ProgressChart extends StatelessWidget {
                     minX: 0,
                     maxX: (recentWorkouts.length - 1).toDouble(),
                     minY: 0,
-                    maxY: _getMaxWeight(recentWorkouts) + 10,
+                    maxY: _getMaxValue(recentWorkouts, isCardio) + (isCardio ? 5 : 10),
                     lineBarsData: [
                       LineChartBarData(
-                        spots: _createSpots(recentWorkouts),
+                        spots: _createSpots(recentWorkouts, isCardio),
                         isCurved: true,
                         gradient: LinearGradient(
                           colors: [
-                            Colors.green.withOpacity(0.8),
-                            Colors.green.withOpacity(0.3),
+                            (isCardio ? Colors.purple : Colors.green).withOpacity(0.8),
+                            (isCardio ? Colors.purple : Colors.green).withOpacity(0.3),
                           ],
                         ),
                         barWidth: 3,
@@ -145,7 +148,7 @@ class ProgressChart extends StatelessWidget {
                           getDotPainter: (spot, percent, barData, index) {
                             return FlDotCirclePainter(
                               radius: 4,
-                              color: Colors.green,
+                              color: isCardio ? Colors.purple : Colors.green,
                               strokeWidth: 2,
                               strokeColor: Colors.white,
                             );
@@ -155,8 +158,8 @@ class ProgressChart extends StatelessWidget {
                           show: true,
                           gradient: LinearGradient(
                             colors: [
-                              Colors.green.withOpacity(0.3),
-                              Colors.green.withOpacity(0.1),
+                              (isCardio ? Colors.purple : Colors.green).withOpacity(0.3),
+                              (isCardio ? Colors.purple : Colors.green).withOpacity(0.1),
                             ],
                           ),
                         ),
@@ -171,17 +174,17 @@ class ProgressChart extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Latest: ${recentWorkouts.last.weight} kg',
-                  style: const TextStyle(
-                    color: Colors.green,
+                  'Latest: ${_getLatestValue(recentWorkouts.last, isCardio)}',
+                  style: TextStyle(
+                    color: isCardio ? Colors.purple : Colors.green,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 if (recentWorkouts.length > 1)
                   Text(
-                    'Change: ${_getWeightChange(recentWorkouts)} kg',
+                    'Change: ${_getValueChange(recentWorkouts, isCardio)}',
                     style: TextStyle(
-                      color: _getWeightChange(recentWorkouts) >= 0 ? Colors.green : Colors.red,
+                      color: _getValueChange(recentWorkouts, isCardio) >= 0 ? Colors.green : Colors.red,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -193,23 +196,43 @@ class ProgressChart extends StatelessWidget {
     );
   }
 
-  List<FlSpot> _createSpots(List<Workout> workouts) {
+  List<FlSpot> _createSpots(List<Workout> workouts, bool isCardio) {
     return workouts.asMap().entries.map((entry) {
       final index = entry.key;
       final workout = entry.value;
-      return FlSpot(index.toDouble(), workout.weight);
+      final value = isCardio ? (workout.durationMinutes ?? 0).toDouble() : workout.weight;
+      return FlSpot(index.toDouble(), value);
     }).toList();
   }
 
-  double _getMaxWeight(List<Workout> workouts) {
-    if (workouts.isEmpty) return 100;
-    return workouts.map((w) => w.weight).reduce((a, b) => a > b ? a : b);
+  double _getMaxValue(List<Workout> workouts, bool isCardio) {
+    if (workouts.isEmpty) return isCardio ? 60 : 100;
+    if (isCardio) {
+      return workouts.map((w) => w.durationMinutes ?? 0).reduce((a, b) => a > b ? a : b).toDouble();
+    } else {
+      return workouts.map((w) => w.weight).reduce((a, b) => a > b ? a : b);
+    }
   }
 
-  double _getWeightChange(List<Workout> workouts) {
+  String _getLatestValue(Workout workout, bool isCardio) {
+    if (isCardio) {
+      return '${workout.durationMinutes ?? 0} minutes';
+    } else {
+      return '${workout.weight} kg';
+    }
+  }
+
+  double _getValueChange(List<Workout> workouts, bool isCardio) {
     if (workouts.length < 2) return 0;
-    final first = workouts.first.weight;
-    final last = workouts.last.weight;
-    return (last - first).toDouble();
+    
+    if (isCardio) {
+      final first = workouts.first.durationMinutes ?? 0;
+      final last = workouts.last.durationMinutes ?? 0;
+      return (last - first).toDouble();
+    } else {
+      final first = workouts.first.weight;
+      final last = workouts.last.weight;
+      return (last - first).toDouble();
+    }
   }
 } 

@@ -5,12 +5,39 @@ import 'package:workout_tracker/providers/medical_provider.dart';
 import 'package:workout_tracker/utils/database_helper.dart';
 import 'package:workout_tracker/utils/export_helper.dart';
 import 'package:workout_tracker/utils/import_helper.dart';
+import 'package:workout_tracker/utils/biometric_helper.dart';
 import 'dart:convert';
 import 'package:workout_tracker/screens/welcome_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  bool _isBiometricEnabled = false;
+  bool _isBiometricAvailable = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBiometricState();
+  }
+
+  Future<void> _loadBiometricState() async {
+    final storage = FlutterSecureStorage();
+    final isEnabled = await storage.read(key: 'biometric_enabled');
+    final isAvailable = await BiometricHelper.isBiometricAvailable();
+    
+    setState(() {
+      _isBiometricEnabled = isEnabled == 'true';
+      _isBiometricAvailable = isAvailable;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,14 +61,14 @@ class ProfileScreen extends StatelessWidget {
   Widget _buildProfileHeader(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            CircleAvatar(
+            const CircleAvatar(
               radius: 40,
               backgroundColor: Colors.green,
               child: Icon(
-                Icons.person,
+                Icons.fitness_center,
                 size: 40,
                 color: Colors.white,
               ),
@@ -56,67 +83,58 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Your Personal Health Companion',
+              'Your Personal Fitness Companion',
               style: TextStyle(
                 color: Colors.white54,
                 fontSize: 16,
               ),
             ),
             const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.grey.withOpacity(0.3)),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.code,
-                    size: 16,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.security, color: Colors.green, size: 16),
+                const SizedBox(width: 8),
+                const Text(
+                  'Encrypted & Private',
+                  style: TextStyle(
                     color: Colors.green,
+                    fontWeight: FontWeight.w500,
                   ),
-                  const SizedBox(width: 8),
-                  const Text(
-                    'Developed by rugtumu',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
+                ),
+                const SizedBox(width: 16),
+                const Icon(Icons.offline_bolt, color: Colors.blue, size: 16),
+                const SizedBox(width: 8),
+                const Text(
+                  'Offline First',
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontWeight: FontWeight.w500,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             InkWell(
               onTap: () => _openGitHub(context),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.grey.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.grey.withOpacity(0.3)),
                 ),
-                child: Row(
+                child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
-                      Icons.link,
-                      size: 16,
-                      color: Colors.blue,
-                    ),
-                    const SizedBox(width: 8),
-                    const Text(
-                      'View on GitHub',
-                      style: TextStyle(
-                        color: Colors.blue,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                    Icon(Icons.code, color: Colors.white54, size: 16),
+                    SizedBox(width: 8),
+                                         Text(
+                       'Developed by rugtumu',
+                       style: TextStyle(
+                         color: Colors.white54,
+                         fontSize: 12,
+                       ),
+                     ),
                   ],
                 ),
               ),
@@ -142,44 +160,36 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            Consumer2<WorkoutProvider, MedicalProvider>(
-              builder: (context, workoutProvider, medicalProvider, child) {
-                return Column(
-                  children: [
-                    _buildDataCard(
-                      'Export Workouts Data',
-                      '${workoutProvider.workouts.length} entries',
-                      Icons.fitness_center,
-                      Colors.green,
-                      () => _exportWorkoutData(context),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildDataCard(
-                      'Export Medical Data',
-                      '${medicalProvider.medicalData.length} entries',
-                      Icons.health_and_safety,
-                      Colors.blue,
-                      () => _exportMedicalData(context),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildDataCard(
-                      'Export All Data',
-                      'Backup everything',
-                      Icons.download,
-                      Colors.orange,
-                      () => _exportAllData(context),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildDataCard(
-                      'Import Data',
-                      'Restore from backup',
-                      Icons.upload,
-                      Colors.purple,
-                      () => _importData(context),
-                    ),
-                  ],
-                );
-              },
+            _buildDataCard(
+              'Export Workout Data',
+              'Export your workout data as JSON',
+              Icons.fitness_center,
+              Colors.green,
+              () => _exportWorkoutData(context),
+            ),
+            const SizedBox(height: 12),
+            _buildDataCard(
+              'Export Medical Data',
+              'Export your medical data as JSON',
+              Icons.health_and_safety,
+              Colors.blue,
+              () => _exportMedicalData(context),
+            ),
+            const SizedBox(height: 12),
+            _buildDataCard(
+              'Export All Data',
+              'Export complete backup of all data',
+              Icons.backup,
+              Colors.orange,
+              () => _exportAllData(context),
+            ),
+            const SizedBox(height: 12),
+            _buildDataCard(
+              'Import Data',
+              'Import data from backup files',
+              Icons.file_upload,
+              Colors.purple,
+              () => _importData(context),
             ),
           ],
         ),
@@ -218,6 +228,41 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
+            
+            // Fingerprint information card for existing users
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.fingerprint, color: Colors.purple),
+                  title: const Text('Fingerprint Authentication'),
+                  subtitle: Text(_isBiometricEnabled ? 'Enabled' : 'Disabled'),
+                  trailing: Switch(
+                    value: _isBiometricEnabled,
+                    onChanged: _isBiometricAvailable
+                        ? (value) => _toggleBiometric(context, value)
+                        : null,
+                  ),
+                ),
+                if (!_isBiometricAvailable)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.warning, color: Colors.orange, size: 18),
+                        const SizedBox(width: 8),
+                        const Expanded(
+                          child: Text(
+                            'Fingerprint is not compatible with this device.',
+                            style: TextStyle(color: Colors.orange, fontSize: 13),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+            
             ListTile(
               leading: const Icon(Icons.info_outline, color: Colors.blue),
               title: const Text('About'),
@@ -240,6 +285,53 @@ class ProfileScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _toggleBiometric(BuildContext context, bool enabled) async {
+    final storage = FlutterSecureStorage();
+    if (enabled) {
+      // Test biometric authentication before enabling
+      print('DEBUG: ProfileScreen - Starting biometric authentication...');
+      final isAuthenticated = await BiometricHelper.authenticate();
+      print('DEBUG: ProfileScreen - Authentication result: $isAuthenticated');
+      
+      if (isAuthenticated) {
+        await storage.write(key: 'biometric_enabled', value: 'true');
+        setState(() {
+          _isBiometricEnabled = true;
+        });
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Fingerprint authentication enabled'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Authentication failed. Please check your fingerprint settings and try again.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } else {
+      await storage.write(key: 'biometric_enabled', value: 'false');
+      setState(() {
+        _isBiometricEnabled = false;
+      });
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Fingerprint authentication disabled'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    }
   }
 
   void _exportWorkoutData(BuildContext context) async {

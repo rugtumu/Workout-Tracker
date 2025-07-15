@@ -45,5 +45,39 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	
+	<!-- Biometric Authentication Permissions -->
+	<key>NSFaceIDUsageDescription</key>
+	<string>This app uses Face ID to securely authenticate users for accessing workout and medical data.</string>
+	
+	<!-- App Store Metadata -->
+	<key>CFBundleDisplayName</key>
+	<string>Workout Tracker</string>
+	<key>CFBundleName</key>
+	<string>Workout Tracker</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0.1</string>
+	<key>CFBundleVersion</key>
+	<string>2</string>
+	
+	<!-- Required Device Capabilities -->
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>armv7</string>
+	</array>
+	
+	<!-- Supported Interface Orientations -->
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	
+	<!-- Privacy Permissions -->
+	<key>NSCameraUsageDescription</key>
+	<string>This app does not use camera functionality.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app does not access photo library.</string>
 </dict>
 </plist>
