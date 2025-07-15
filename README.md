@@ -39,10 +39,17 @@ Kişisel kullanım için özel, offline çalışabilen antrenman takip uygulamas
 
 ## Sistem Gereksinimleri
 
+### Geliştirme Ortamı
 - **İşletim Sistemi**: Windows 10+, macOS 10.14+ veya Ubuntu 18.04+
 - **Flutter**: 3.0.0 veya üzeri
 - **Android SDK**: API seviyesi 21 veya üzeri
-- **Android Cihaz**: Android 5.0 (API 21) veya üzeri
+- **iOS SDK**: Xcode 12.0+ (macOS için)
+
+### Hedef Platformlar
+- **Android**: Android 5.0 (API 21) veya üzeri
+- **iOS**: iOS 12.0 veya üzeri
+- **App Store**: ✅ Uygun (iOS için)
+- **Google Play Store**: ✅ Uygun (Android için)
 
 ## Çoklu Platform Kurulum Talimatları
 
@@ -182,6 +189,22 @@ adb install build/app/outputs/flutter-apk/app-debug.apk
 5. Set, tekrar ve ağırlık girin
 6. **İlerleme** sekmesinde ilerleme grafiklerini görüntüleyin
 
+### Fingerprint Kimlik Doğrulaması (Opsiyonel Özellik)
+**PIN varsayılan kimlik doğrulama yöntemidir.** Fingerprint isteğe bağlı bir özelliktir.
+
+**Fingerprint etkinleştirmek için:**
+1. Uygulamaya PIN ile giriş yapın
+2. **Profil** sekmesine gidin
+3. **Settings** bölümünde "Fingerprint Authentication" seçeneğini bulun
+4. Switch'i açın ve parmak izinizi doğrulayın
+5. Artık uygulamaya parmak izi ile giriş yapabilirsiniz!
+
+**Önemli Notlar:**
+- PIN her zaman ana kimlik doğrulama yöntemidir
+- Fingerprint sadece hızlı erişim için opsiyonel bir özelliktir
+- Fingerprint desteklemeyen cihazlarda sadece PIN kullanılır
+- İstediğiniz zaman fingerprint'i kapatabilirsiniz
+
 ### Medikal Veri Takibi
 1. **Medikal** sekmesine dokunun
 2. Medikal veri eklemek için **+** düğmesine dokunun
@@ -200,6 +223,7 @@ adb install build/app/outputs/flutter-apk/app-debug.apk
 
 - Tüm veriler cihazınızda **şifreli (encrypted)** olarak saklanır (SQLCipher ile).
 - Veritabanı şifresi, uygulama ilk açılışta belirlediğiniz **PIN** ile korunur. **PIN unutulursa kurtarılamaz!** PIN'inizi güvenli bir yerde saklayın.
+- **Fingerprint (parmak izi) kimlik doğrulaması** - opsiyonel, hızlı erişim için.
 - Hiçbir veri harici sunuculara gönderilmez.
 - Veritabanı dosyası şifreli olduğu için, cihazınız kaybolsa veya hacklense bile verileriniz koruma altındadır.
 - Cihazınızın kaybolma veya hacklenme durumuna karşı verilerinizi düzenli olarak yedeklemeniz tavsiye edilir.
@@ -223,6 +247,7 @@ adb install build/app/outputs/flutter-apk/app-debug.apk
 - `path_provider`: Dosya sistemi erişimi
 - `share_plus`: Veri paylaşımı
 - `file_picker`: Veri içe aktarma
+- `local_auth`: Parmak izi kimlik doğrulaması
 
 ### Mimari
 - Durum yönetimi için **Provider Pattern**
@@ -303,8 +328,12 @@ Sorunlar veya sorular için:
 
 Bu uygulama kişisel kullanım için tasarlanmıştır. Tıbbi tavsiye için her zaman sağlık uzmanlarına danışın. Uygulama profesyonel tıbbi rehberliğin yerini tutmaz.
 
-## Yenilikler (v1.0.2)
+## Yenilikler (v1.0.3)
 
+- **Fingerprint (parmak izi) kimlik doğrulaması** eklendi - opsiyonel, hızlı erişim için.
+- **PIN varsayılan kimlik doğrulama yöntemi** olarak ayarlandı.
+- Profile ekranında fingerprint ayarları eklendi.
+- Kardiyo egzersizleri için progress chart düzeltmesi - artık dakika cinsinden gösteriliyor.
 - Veritabanı artık **SQLCipher** ile şifreli ve PIN ile korunuyor. PIN unutulursa kurtarılamaz, uyarı ekranı eklendi.
 - Eski şifresiz veritabanı ile uyumsuzluk durumunda yeni şifreli veritabanı otomatik oluşturuluyor.
 - Workout ve medical data ekleme/güncelleme işlemlerinde anında güncellenen UI (await ile).
@@ -492,6 +521,22 @@ adb install build/app/outputs/flutter-apk/app-debug.apk
 5. Enter sets, reps, and weight
 6. View progress charts in the **Progress** tab
 
+### Fingerprint Authentication (Optional Feature)
+**PIN is the default authentication method.** Fingerprint is an optional feature for convenience.
+
+**To enable fingerprint:**
+1. Log in to the app with your PIN
+2. Go to the **Profile** tab
+3. Find "Fingerprint Authentication" in the Settings section
+4. Turn on the switch and verify your fingerprint
+5. You can now log in with your fingerprint!
+
+**Important Notes:**
+- PIN is always the primary authentication method
+- Fingerprint is only an optional feature for quick access
+- Devices without fingerprint support will only use PIN
+- You can disable fingerprint anytime
+
 ### Medical Data Tracking
 1. Tap the **Medical** tab
 2. Tap the **+** button to add medical data
@@ -510,6 +555,7 @@ adb install build/app/outputs/flutter-apk/app-debug.apk
 
 - All data is stored **encrypted** on your device (using SQLCipher).
 - The database password is protected by a **PIN** you set on first launch. **If you forget your PIN, it cannot be recovered!** Store your PIN safely.
+- **Fingerprint authentication** - optional, for quick access.
 - No data is sent to external servers.
 - The database file is encrypted, so even if your device is lost or hacked, your data is protected.
 - It is recommended to back up your data regularly in case your device is lost or compromised.
@@ -533,6 +579,7 @@ adb install build/app/outputs/flutter-apk/app-debug.apk
 - `path_provider`: File system access
 - `share_plus`: Data sharing
 - `file_picker`: Data import
+- `local_auth`: Fingerprint authentication
 
 ### Architecture
 - **Provider Pattern** for state management
@@ -620,4 +667,158 @@ This app is designed for personal use. Always consult healthcare professionals f
 - Workout and medical data additions/updates now instantly update the UI (using await).
 - Enhanced security and data privacy emphasis.
 
-</details> 
+## Ubuntu'dan iOS Test Etme
+
+### macOS Virtual Machine Kurulumu
+
+Ubuntu üzerinden iOS test etmek için macOS VM kurmanız gerekiyor:
+
+#### 1. VMware Workstation Kurulumu
+```bash
+# VMware Workstation'ı indirin
+wget https://download3.vmware.com/software/wkst/file/VMware-Workstation-Full-17.5.0-22583790.x86_64.bundle
+
+# Kurulum
+sudo chmod +x VMware-Workstation-Full-17.5.0-22583790.x86_64.bundle
+sudo ./VMware-Workstation-Full-17.5.0-22583790.x86_64.bundle
+```
+
+#### 2. macOS VM Kurulumu
+1. **macOS ISO** indirin (legally)
+2. VMware'de yeni VM oluşturun
+3. **macOS 12+** kurun
+4. **Xcode** kurun (App Store'dan)
+
+#### 3. Flutter Kurulumu (macOS VM'de)
+```bash
+# Flutter'ı macOS'a kurun
+cd ~/development
+curl -O https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_3.16.5-stable.tar.xz
+tar xf flutter_macos_3.16.5-stable.tar.xz
+
+# PATH'e ekleyin
+echo 'export PATH="$PATH:$HOME/development/flutter/bin"' >> ~/.zshrc
+source ~/.zshrc
+
+# Kurulumu doğrulayın
+flutter doctor
+```
+
+#### 4. iOS Test Etme
+```bash
+# iOS Simulator'da test
+flutter run -d ios
+
+# Fiziksel iPhone'da test (iPhone'u VM'e bağlayın)
+flutter devices
+flutter run -d <iphone-device-id>
+```
+
+### 2. **Cloud macOS Servisleri**
+
+#### MacStadium (Ücretli)
+- Cloud macOS sunucuları
+- Xcode ve iOS SDK hazır
+- Remote development
+
+#### GitHub Actions (Ücretsiz)
+```yaml
+# .github/workflows/ios-test.yml
+name: iOS Test
+on: [push]
+jobs:
+  test:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+      - run: flutter pub get
+      - run: flutter test
+      - run: flutter build ios --no-codesign
+```
+
+### 3. **Cross-Platform Test Stratejisi**
+
+#### Android'de Test (Ubuntu'da)
+```bash
+# Android cihazınızı bağlayın
+flutter devices
+flutter run -d android
+```
+
+#### Web'de Test (Ubuntu'da)
+```bash
+# Web'de test edin
+flutter run -d chrome
+```
+
+#### iOS Simulator (macOS VM'de)
+```bash
+# iOS Simulator'da test
+flutter run -d ios
+```
+
+## 🔧 Ubuntu'da iOS Development Alternatifleri
+
+### 1. **React Native (Cross-Platform)**
+- Ubuntu'da geliştirme mümkün
+- iOS için macOS gerekliliği devam eder
+
+### 2. **Flutter Web**
+- Ubuntu'da tam geliştirme mümkün
+- iOS-specific özellikler sınırlı
+
+### 3. **Progressive Web App (PWA)**
+- Ubuntu'da geliştirme mümkün
+- iOS Safari desteği sınırlı
+
+## 📱 iOS Test Etme Adımları
+
+### macOS VM'de:
+1. **Xcode** kurun
+2. **iOS Simulator**'ı açın
+3. **Flutter** kurun
+4. **Projeyi** kopyalayın
+5. **Test edin**:
+   ```bash
+   flutter run -d ios
+   ```
+
+### Fiziksel iPhone'da:
+1. **Apple Developer hesabı** gerekli
+2. **Provisioning profile** oluşturun
+3. **iPhone'u** VM'e bağlayın
+4. **Test edin**:
+   ```bash
+   flutter run -d <device-id>
+   ```
+
+## 💡 Öneriler
+
+### 1. **Geliştirme Stratejisi**
+- **Android** geliştirmeyi Ubuntu'da yapın
+- **iOS** testini macOS VM'de yapın
+- **Cross-platform** özellikleri öncelikleyin
+
+### 2. **CI/CD Pipeline**
+```yaml
+# GitHub Actions ile otomatik test
+- Android test: Ubuntu runner
+- iOS test: macOS runner
+- Web test: Ubuntu runner
+```
+
+### 3. **Minimum Viable Product**
+- Önce **Android** versiyonunu tamamlayın
+- Sonra **iOS** desteği ekleyin
+- **Web** versiyonu da düşünün
+
+## 🎯 Sonuç
+
+**Ubuntu'da iOS test etmek mümkün değil**, ancak:
+- ✅ **macOS VM** ile mümkün
+- ✅ **Cloud macOS** servisleri ile mümkün
+- ✅ **Android test** Ubuntu'da mümkün
+- ✅ **Web test** Ubuntu'da mümkün
+
+En pratik çözüm: **macOS VM** kurup iOS testlerini orada yapmak! 🚀 
