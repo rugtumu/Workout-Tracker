@@ -240,6 +240,150 @@ class DatabaseHelper {
     };
   }
 
+  // Homepage specific queries
+  Future<int> getWeeklyStreak() async {
+    final dbHelper = await DatabaseHelper.getInstance();
+    final db = await dbHelper.database;
+    
+    // Get all unique dates where workouts were done
+    final List<Map<String, dynamic>> maps = await db.rawQuery('''
+      SELECT DISTINCT date FROM workouts ORDER BY date DESC
+    ''');
+    
+    if (maps.isEmpty) return 0;
+    
+    final List<String> workoutDates = maps.map((m) => m['date'] as String).toList();
+    final List<DateTime> dates = workoutDates.map((d) => DateTime.parse(d)).toList();
+    
+    // Calculate weekly streak
+    int streak = 0;
+    DateTime? currentWeekStart;
+    
+    for (int i = 0; i < dates.length; i++) {
+      final date = dates[i];
+      final weekStart = date.subtract(Duration(days: date.weekday - 1));
+      
+      if (currentWeekStart == null) {
+        currentWeekStart = weekStart;
+        streak = 1;
+      } else {
+        final weeksDiff = currentWeekStart.difference(weekStart).inDays ~/ 7;
+        if (weeksDiff == 1) {
+          streak++;
+          currentWeekStart = weekStart;
+        } else if (weeksDiff > 1) {
+          break; // Streak broken
+        }
+      }
+    }
+    
+    return streak;
+  }
+
+  Future<double?> getCurrentBodyWeight() async {
+    final dbHelper = await DatabaseHelper.getInstance();
+    final db = await dbHelper.database;
+    
+    final List<Map<String, dynamic>> maps = await db.query(
+      'medical_data',
+      where: 'type = ?',
+      whereArgs: ['Body Weight'],
+      orderBy: 'date DESC',
+      limit: 1,
+    );
+    
+    if (maps.isNotEmpty) {
+      return maps.first['value'] as double;
+    }
+    return null;
+  }
+
+  Future<Map<String, dynamic>?> getFavoriteExercise() async {
+    final dbHelper = await DatabaseHelper.getInstance();
+    final db = await dbHelper.database;
+    
+    // Get exercise with most workouts, then highest weight if tied
+    final List<Map<String, dynamic>> maps = await db.rawQuery('''
+      SELECT 
+        exercise_name,
+        COUNT(*) as workout_count,
+        MAX(weight) as max_weight
+      FROM workouts 
+      GROUP BY exercise_name 
+      ORDER BY workout_count DESC, max_weight DESC 
+      LIMIT 1
+    ''');
+    
+    if (maps.isNotEmpty) {
+      return {
+        'exercise_name': maps.first['exercise_name'],
+        'workout_count': maps.first['workout_count'],
+        'max_weight': maps.first['max_weight'],
+      };
+    }
+    return null;
+  }
+
+  Future<Map<String, dynamic>?> getBenchPressPR() async {
+    final dbHelper = await DatabaseHelper.getInstance();
+    final db = await dbHelper.database;
+    
+    final List<Map<String, dynamic>> maps = await db.query(
+      'workouts',
+      where: 'exercise_name = ?',
+      whereArgs: ['Bench Press'],
+      orderBy: 'weight DESC',
+      limit: 1,
+    );
+    
+    if (maps.isNotEmpty) {
+      return {
+        'weight': maps.first['weight'],
+        'date': maps.first['date'],
+        'sets': maps.first['sets'],
+        'reps': maps.first['reps'],
+      };
+    }
+    return null;
+  }
+
+  Future<Map<String, dynamic>> getWeeklySummary() async {
+    final dbHelper = await DatabaseHelper.getInstance();
+    final db = await dbHelper.database;
+    
+    // Get current week's start and end
+    final now = DateTime.now();
+    final weekStart = now.subtract(Duration(days: now.weekday - 1));
+    final weekEnd = weekStart.add(const Duration(days: 6));
+    
+    final weekStartStr = weekStart.toIso8601String().split('T')[0];
+    final weekEndStr = weekEnd.toIso8601String().split('T')[0];
+    
+    // Get workouts this week
+    final List<Map<String, dynamic>> maps = await db.rawQuery('''
+      SELECT 
+        COUNT(DISTINCT date) as workout_days,
+        COUNT(*) as total_workouts,
+        SUM(COALESCE(duration_minutes, 0)) as total_duration
+      FROM workouts 
+      WHERE date BETWEEN ? AND ?
+    ''', [weekStartStr, weekEndStr]);
+    
+    if (maps.isNotEmpty) {
+      return {
+        'workout_days': maps.first['workout_days'] ?? 0,
+        'total_workouts': maps.first['total_workouts'] ?? 0,
+        'total_duration': maps.first['total_duration'] ?? 0,
+      };
+    }
+    
+    return {
+      'workout_days': 0,
+      'total_workouts': 0,
+      'total_duration': 0,
+    };
+  }
+
   Future<void> close() async {
     final dbHelper = await DatabaseHelper.getInstance();
     final db = await dbHelper.database;

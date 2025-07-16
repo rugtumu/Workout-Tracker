@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:workout_tracker/screens/home_screen.dart';
+import 'package:workout_tracker/screens/homepage_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -24,7 +24,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     
     if (termsAccepted && mounted) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        MaterialPageRoute(builder: (context) => const HomepageScreen()),
       );
     }
   }
@@ -47,7 +47,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     // Navigate to home screen
     if (mounted) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        MaterialPageRoute(builder: (context) => const HomepageScreen()),
       );
     }
   }
